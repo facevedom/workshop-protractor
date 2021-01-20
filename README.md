@@ -1,6 +1,6 @@
 # Workshop Protractor
 
-!Bienvenido! El objetivo de este taller es desarrollar los conocimientos necesarios para automatizar pruebas de interfaz gráfica (UI) usando [Protractor](https://www.protractortest.org/#/). Mediante el desarrollo de varios ejercicios prácticos, se abarcará todo lo que necesitas para desarrollar un proyecto de automatización de forma exitosa. Durante el desarrollo de los ejercicios, se explicará cómo preparar un proyecto para un proceso de integración continúa con [Travis CI](https://travis-ci.com/), cómo usar [SauceLabs](https://saucelabs.com/) como plataforma de pruebas en la nube, el uso de [Zalenium](https://github.com/zalando/zalenium) para orquestar pruebas (tanto local como en la nube), y el adecuado uso de [Github](https://github.com/) y [Gitflow](https://guides.github.com/introduction/flow/) para la entrega de un producto de software.
+!Bienvenido! El objetivo de este taller es desarrollar los conocimientos necesarios para automatizar pruebas de interfaz gráfica (UI) usando [Protractor](https://www.protractortest.org/#/). Mediante el desarrollo de varios ejercicios prácticos, se abarcará todo lo que necesitas para desarrollar un proyecto de automatización de forma exitosa. Durante el desarrollo de los ejercicios, se explicará el adecuado uso de [Github](https://github.com/) y [Gitflow](https://guides.github.com/introduction/flow/) para la entrega de un producto de software.
 
 Para realizar este taller se espera que el estudiante tenga buenos conocimientos en:
 
@@ -21,7 +21,6 @@ Para realizar este taller se espera que el estudiante tenga buenos conocimientos
 1. [Agregando Reporte a la Consola](#3-agregando-reporte-a-la-consola)
 1. [Desactivar el manejador de promesas y Selenium server](#4-desactivar-el-manejador-de-promesas-y-selenium-server)
 1. [Chrome Headless](#5-chrome-headless)
-1. [Agregar Integración Continua](#6-agregar-integración-continua)
 1. [Agregando Análisis de Código Estático](#7-agregando-análisis-de-código-estático)
 1. [Depurando El Código](#8-depurando-el-código)
 1. [CSS Selector](#9-css-selector)
@@ -39,9 +38,7 @@ Para realizar este taller se espera que el estudiante tenga buenos conocimientos
 1. [Trabajando con IFrames](#21-trabajando-con-iframes)
 1. [Subiendo un Archivo](#22-subiendo-un-archivo)
 1. [Descargando Archivos](#23-descargando-archivos)
-1. [Configurar Saucelabs](#24-configurar-saucelabs)
 1. [Probar con diferentes navegadores](#25-probar-con-diferentes-navegadores)
-1. [Zalenium](#26-zalenium)
 
 ### 1. Configuración Inicial del Proyecto
 
@@ -350,33 +347,6 @@ Para realizar este taller se espera que el estudiante tenga buenos conocimientos
 1. Cambia el nombre del script **test** por **test:local**
 1. Ejecuta tanto el comando `npm run test:local` como el `npm run test:headless` para comprobar que ejecuta efectivamente
 1. Solicite la revisión de código tal como se hizo en el punto anterior
-
-### 6. Agregar Integración Continua
-
-**Descripción**: La integración continua es una práctica requerida hoy en día, en esta sesión configuraremos travis para ejecutar nuestra integración continua
-
-1. Crear el archivo **.nvmrc** en la raíz del proyecto con el contenido `v10.10.0`
-1. Crear el archivo **.travis.yml** en la raíz del proyecto
-1. Agregar el siguiente contenido
-
-    ``` yml
-    dist: xenial
-    addons:
-      chrome: stable
-    language: node_js
-    cache:
-      directories:
-        - "node_modules"
-    ```
-
-1. Habilitar Travis en el repositorio <https://docs.travis-ci.com/user/getting-started/>
-1. Modificar los scripts de **package.json** agregando `"test": "npm run test:headless"`
-1. Agregar el script `"postinstall"` con el valor `"webdriver-manager update --gecko false"`
-1. Subir los cambios a github (no cree aún el PR)
-1. Ir a la url de [Configuración de Travis](https://travis-ci.com/account/repositories)
-1. Habilite la configuración GitHub Apps
-1. Cree un PR
-1. Verificar que la ejecución en Travis termine correctamente
 
 ### 7. Agregando Análisis de Código Estático
 
@@ -800,92 +770,6 @@ Sobre las [opciones de depuración de node](https://code.visualstudio.com/docs/n
     Recibirá el nombre del archivo y devolverá el buffer que contiene la información del archivo
 1. Modificar la prueba de tal forma que descargue el archivo y después comprobar que descargó de forma correcta
 
-### 24. Configurar Saucelabs
-
-**Descripción**: Ejecutar en modo headless no siempre es la mejor opción, existen herramientas de pago como Saucelabs que nos provisionan diferentes sistemas operativos y diferentes navegadores, en esta sesión configuraremos saucelabs para ejecutar nuestras pruebas.
-
-Ya que nuestras pruebas se ejecutarán en un servidor de integración sin interfaz gráfica, debemos utilizar servicios externos para la ejecución en browsers reales. En este caso utilizaremos saucelabs.
-
-1. Crear una cuenta en [SauceLabs](https://saucelabs.com/)
-1. Una vez creada la cuenta, ir a la opción de User Settings
-
-    ![Saucelabs user settings](https://raw.githubusercontent.com/wiki/AgileTestingColombia/workshop-protractor/images/image1.png)
-
-1. Ir a la sección de Access Key y dar click en show. Esto pedirá el password para mostrar el access key. Una vez lo acceda, cópielo al portapapeles y guárdelo en un lugar seguro
-
-    ![Saucelabs access key](https://raw.githubusercontent.com/wiki/AgileTestingColombia/workshop-protractor/images/image2.png)
-
-1. Adicione al archivo **package.json** el script `test:saucelabs` y haga que este se corra cuando se ejecute el script de test
-
-    ``` json
-    "test:saucelabs": "npm run build && protractor dist/protractor/saucelabs.config.js",
-    "test": "npm run test:saucelabs"
-    ```
-
-1. Duplique el archivo  **protractor/local.config.ts** con el nombre **protractor/saucelabs.config.ts**
-1. Adicione las siguientes propiedades **protractor/saucelabs.config.ts**:
-    * `sauceUser`: tendrá el valor del user name de saucelabs (se obtendrá por variable de ambiente)
-    * `sauceKey`: tendrá el valor del key de saucelabs copiado en el punto 3 (se obtendrá por variable de ambiente)
-    * `Capabilities.name`: nombre de la ejecución del job en saucelabs
-
-    ``` ts
-    // ...
-
-    export let config: Config = {
-      // ...
-      sauceUser: process.env.SAUCE_USERNAME,
-      sauceKey: process.env.SAUCE_ACCESS_KEY
-    };
-    ```
-
-    ``` ts
-    // ...
-    capabilities: {
-      name: 'UI Workshop',
-      browserName: 'chrome',
-      chromeOptions: {
-        args: ['--disable-popup-blocking', '--no-default-browser-check', '--window-size=800,600'],
-        prefs: { credentials_enable_service: false }
-      }
-    },
-    // ...
-    ```
-
-1. Una vez configurado esto, en la consola asigne los valores para `SAUCE_USERNAME` y `SAUCE_ACCESS_KEY`, con los valores del registro en saucelabs
-
-    ``` bash
-    export SAUCE_USERNAME='sauce-username'
-    export SAUCE_ACCESS_KEY='sauce-keu'
-    ```
-
-1. Ejecute la prueba `npm test`
-1. Esto lanzará la ejecución directamente en saucelabs y se puede visualizar de la siguiente forma: <http://recordit.co/pIAXMQShQJ>
-1. Para que travis tome correctamente el `SAUCE_ACCESS_KEY` se debe configurar la variable de forma encriptada
-
-    ``` bash
-    travis encrypt SAUCE_USERNAME=el-usuario --add --com
-    travis encrypt SAUCE_ACCESS_KEY=el-key --add --com
-    ```
-
-    **Nota 1**: Si recibe un mensaje de error similar a `repository not known to https://api.travis-ci.org/: owner/repo`
-                Inicie sesión usando el comando `travis login --com`, se le solicitara ingresar su usuario y contraseña de Travis
-    **Nota 2**: Si no desea instalar el cliente de travis puede utilizar docker de la siguiente forma:
-
-    ```bash
-    docker run -v $(pwd):/usr/src/app -it ruby /bin/bash
-    gem install travis -v 1.8.9 --no-rdoc --no-ri
-    echo 'y' | travis -v
-    cd /usr/src/app
-    travis encrypt SAUCE_USERNAME=el-usuario --add --com
-    travis encrypt SAUCE_ACCESS_KEY=el-key --add --com
-    ```
-
-#### Sugerencias
-
-* Para configurar las variables de entorno en diferentes sistemas operativos, consulte este [link](https://wiki.saucelabs.com/display/DOCS/Best+Practice%3A+Use+Environment+Variables+for+Authentication+Credentials)
-* Asegúrese de establecer los valores correctos para `SAUCE_USERNAME` y `SAUCE_ACCESS_KEY`
-* Para instalar el cliente de Travis, sigas las instrucciones de <https://github.com/travis-ci/travis.rb#installation>
-
 ### 25. Probar con diferentes navegadores
 
 **Descripción**: Nuestros productos generalmente deben ser verificados en más de un navegador, por tanto es importante saber cómo ejecutar nuestras pruebas en varios navegadores.
@@ -928,45 +812,3 @@ Ya que nuestras pruebas se ejecutarán en un servidor de integración sin interf
 * Las configuraciones pueden mejorarse, haciendo que se reciban parámetros por consola con los browsers en los que se desea ejecutar
 * Puede adicionar más browsers o versiones de browsers o sistema operativo, siempre y cuando sean [soportados](https://saucelabs.com/platforms) por saucelabs
 * Opciones como shardTestFiles o maxInstances también pueden ser configurables para que el usuario decida cómo ejecutar las pruebas y dejar valores por defecto para ser usado por el CI
-
-### 26. Zalenium
-
-**Descripción**: En ocasiones requerimos ejecutar nuestras pruebas en nuestro ambiente local o en un servidor de integración continua pero no tenemos los recursos suficientes para pagar todas las ejecuiones que se requieren en servicios como Saucelabs, o simplemente no queremos instalar ciertos navegadores en nuestro equipo ya que nos puede afectar nuestro ambiente de trabajo. Zalenium nos permite ejecutar nuestras pruebas dentro de containers si cumplen ciertos requerimientos y el resto mandarlo a Saucelabs de esa forma no tenemos que hacer configuraciones adicionales y tampoco incurrir a facturas muy grandes
-
-1. Descargue la imagen de docker elgalu/selenium
-
-    ``` bash
-    docker pull elgalu/selenium
-    ```
-
-1. Descargue la imagen de zalenium
-
-    ``` bash
-    docker pull dosel/zalenium
-    ```
-
-    **Nota 1**: Si recibe un mensaje de error similar a `Error response from daemon: Get https://registry-1.docker.io/v2/: unauthorized:incorrect username or password`
-                Inicie sesión usando el comando `echo "YOUR_DOCKER_PASSWORD" | docker login --username YOUR_DOCKER_USERNAME --password-stdin`
-
-1. Ejecute el contenedor de zalenium
-
-    ``` bash
-    docker run --rm -ti --name zalenium -p 4444:4444 \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /tmp/videos:/home/seluser/videos \
-        --privileged dosel/zalenium start
-    ```
-
-1. Duplicar el archivo de **saucelabs.config.ts** y llamarlo **zalenium.config.ts**
-1. Configure el archivo de zalenium para que apunte al servidor de Grid de Zalenium
-
-    ``` ts
-    seleniumAddress: 'http://localhost:4444/wd/hub'
-    ```
-
-1. Abrá la página `http://localhost:4444/grid/admin/live`
-1. Remueva del **package.json** la instrucción del `--gecko false` en el script del postinstall
-1. Agregue el script de `test:zalenium`en el **package.json**
-1. Ejecute el comando `npx webdriver-manager update`
-1. Ejecute las pruebas con `npm run test:zalenium` y vea como en la página de `live` se refresca la ejecución de las pruebas
-1. Abrá la página `http://localhost:4444/dashboard` y tome un screenshot del resultado de las pruebas y lo adjunta al PR
