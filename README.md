@@ -287,7 +287,7 @@ Para realizar este taller se espera que el estudiante tenga buenos conocimientos
 1. Modifique el archivo **local.config.ts** incluyendo el `import` del `reporter`
 
     ``` ts
-    import { reporter } from './helpers/reporter';
+    import { reporter } from '../helpers/reporter';
     ```
 
 1. Dentro del método `onPrepare` agregar el llamado al método reporter
